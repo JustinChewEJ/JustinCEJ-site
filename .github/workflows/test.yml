@@ -1,0 +1,56 @@
+name: Functional tests
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  functional-tests:
+    name: functional-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out independent tests
+        uses: actions/checkout@v4
+        with:
+          repository: JustinChewEJ/JustinCEJ-site-tests
+          path: tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - name: Install tests and Chromium
+        working-directory: tests
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Serve proposed site
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory public > /tmp/portfolio-server.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/portfolio-server.log
+          exit 1
+      - name: Run functional tests
+        working-directory: tests
+        run: npm test
+        env:
+          BASE_URL: http://127.0.0.1:8000
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-test-report
+          path: |
+            tests/playwright-report/
+            tests/test-results/
+          if-no-files-found: ignore
