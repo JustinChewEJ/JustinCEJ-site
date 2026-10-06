@@ -63,3 +63,21 @@ async function loadRepositories() {
 
 retry.addEventListener('click', loadRepositories);
 loadRepositories();
+
+const backToTop = document.querySelector('#back-to-top');
+const hero = document.querySelector('#hero');
+
+function updateBackToTop() {
+  backToTop.hidden = hero.getBoundingClientRect().bottom > 0;
+}
+
+window.addEventListener('scroll', updateBackToTop, { passive: true });
+window.addEventListener('resize', updateBackToTop);
+window.addEventListener('pageshow', updateBackToTop);
+updateBackToTop();
+
+backToTop.addEventListener('click', () => {
+  document.querySelector('#hero-title').focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  updateBackToTop();
+});
