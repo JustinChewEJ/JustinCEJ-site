@@ -10,7 +10,7 @@ Run `python -m http.server 8000 --directory public`, then open http://localhost:
 
 ## Content
 
-Edit `public/index.html` to update the bio, toolkit, projects, and contact links. The repository feed in `public/script.js` loads public projects from GitHub and includes empty and error states.
+Edit `public/index.html` to update the bio, experience, toolkit, projects, and contact links. Project images live in `public/images/`. The repository feed in `public/script.js` loads public projects from GitHub and includes empty and error states.
 
 ## Deployment
 
