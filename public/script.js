@@ -200,10 +200,8 @@ let scrollFrame = 0;
 function scrollToTop() {
   cancelAnimationFrame(scrollFrame);
   const from = window.scrollY;
-  if (!from || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    return;
-  }
+  // Plays even when the visitor prefers reduced motion.
+  if (!from) return;
   const duration = Math.min(900, 450 + from * 0.25);
   const start = performance.now();
   const step = now => {
